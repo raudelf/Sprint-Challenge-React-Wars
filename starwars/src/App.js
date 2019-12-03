@@ -1,18 +1,47 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './App.css';
+import Card from './components/Card';
+import styles from 'styled-components';
 
 const App = () => {
-  // Try to think through what state you'll need for this app before starting. Then build out
-  // the state properties here.
+  
+  const [person, setPerson] = useState([]);
 
-  // Fetch characters from the star wars api in an effect hook. Remember, anytime you have a 
-  // side effect in a component, you want to think about which state and/or props it should
-  // sync up with, if any.
+  const fetchUser = props => {
+    axios.get('https://swapi.co/api/people/')
+    .then(res => {
+      console.log(res);
+      return setPerson(res.data.results);
+    })
+    .catch(err => {
+      return `Error: ${err}`;
+    })
+  };
+  useEffect(fetchUser, []);
+
+  const Container = styles.div`
+  margin: 0 auto;
+  width: 1000px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  `;
+
+  const Headline = styles.div`
+  width: 100%;
+  text-align: center;
+  `;
 
   return (
-    <div className="App">
+    <Container className="App">
+      <Headline>
       <h1 className="Header">React Wars</h1>
-    </div>
+      </Headline>
+      {person.map((value, index) => {
+        return <Card name={value.name} gender={value.gender} birth={value.birth_year} hair={value.hair_color} eyes={value.eye_color} height={value.height} mass={value.mass} key={index}/>
+      })}
+    </Container>
   );
 }
 
